@@ -1,0 +1,14 @@
+Bundler main points
+    - A bundler starts at an entry file like main.tsx and follows all the import statements.
+    - It builds a dependency graph, which is a map of which files depend on which other files.
+    - It combines many JavaScript/TypeScript files into fewer output files.
+    - It converts TypeScript into JavaScript the browser can run.
+    - It converts JSX/TSX into normal JavaScript.
+    - It includes needed code from node_modules packages.
+    - It processes CSS imports so styles are included correctly.
+    - It copies images, fonts, and other assets into the final output folder.
+    - It renames output files with hashes so browsers cache them correctly.
+    - It removes unused code through tree-shaking.
+    - It splits code into chunks so the browser does not load everything at once.
+    - It minifies production code to make files smaller.
+    - It outputs a final deployable folder, usually called dist.

@@ -1,0 +1,18 @@
+Vite main points
+    - Vite is a modern frontend build tool used for projects like React, TypeScript, and Vue.
+    - Vite provides a development server for local coding and testing.
+    - In development, Vite serves files individually instead of fully bundling the entire app.
+    - Vite uses the browser's native ES module import system during development.
+    - Because it avoids full bundling in development, startup is extremely fast.
+    - Vite transforms TypeScript into JavaScript the browser can run.
+    - Vite transforms JSX/TSX into normal JavaScript.
+    - Vite handles imports from node_modules packages.
+    - Vite provides Hot Module Replacement (HMR) so changes appear almost instantly in the browser.
+    - Vite serves your application while you code.
+    - Vite is not itself a bundler, but it includes bundling as part of its build process.
+    - During production builds, Vite uses Rollup as its bundler.
+    - Rollup follows imports, builds the dependency graph, bundles files, tree-shakes unused code, and optimizes output.
+    - npm run dev starts the Vite development server.
+    - npm run build creates the optimized production build.
+    - The production build is usually written to a dist folder.
+    - Vite is optional for plain HTML/CSS/JS projects but is very useful for modern React and TypeScript projects.
