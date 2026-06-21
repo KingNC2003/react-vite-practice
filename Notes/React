@@ -1,3 +1,22 @@
 - Creates virtual DOM in memory
 - Instead of manipulating the browser's DOM directly, React creates a virtual DOM in memory, where it does all the necessary manipulating, before     making the changes in the browser DOM.
 - React only changes what needs to be changed
+
+
+React render HTML
+    - React renders HTML to the web page via a container, and a function called createRoot().
+    - Typically, this container is a <div id="root"></div> element in the index.html file.
+
+    CreateRoot() function
+        - located in main.tsx in src (used to create root node)
+        - The createRoot() function takes one argument, an HTML element.
+        - Define the HTML element where a React component should be displayed.
+    .render()
+        - Defines whats in the element
+    Root Node
+        - The root node is the HTML element where you want to display the result.
+        - It is like a container for content, managed by React.
+        - It does NOT have to be a <div> element and it does NOT have to have the id='root':
+
+ES6
+    - Modern JavaScript

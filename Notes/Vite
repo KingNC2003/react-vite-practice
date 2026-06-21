@@ -10,9 +10,12 @@ Vite main points
     - Vite provides Hot Module Replacement (HMR) so changes appear almost instantly in the browser.
     - Vite serves your application while you code.
     - Vite is not itself a bundler, but it includes bundling as part of its build process.
-    - During production builds, Vite uses Rollup as its bundler.
+    - During production builds, Vite uses Rolldown as its bundler.
     - Rollup follows imports, builds the dependency graph, bundles files, tree-shakes unused code, and optimizes output.
     - npm run dev starts the Vite development server.
     - npm run build creates the optimized production build.
     - The production build is usually written to a dist folder.
     - Vite is optional for plain HTML/CSS/JS projects but is very useful for modern React and TypeScript projects.
+
+    Commands
+        npm create vite@latest . --template react-ts        (pulls vite generator and creates project not installed at this moment)
