@@ -1,0 +1,5 @@
+Shortcuts
+    - f12 (Jump to where something is defined)
+    - Alt - f12 (Peak at definition)
+    - ctrl + ` (Open terminal)
+    
