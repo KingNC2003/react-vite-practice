@@ -139,6 +139,7 @@ const myElement = (
     // Alternatively, you can use a "fragment" to wrap multiple lines. This will prevent unnecessarily adding extra nodes to the DOM. <  />
     // Have to use className instead of class
     // Comments in JSX are written with {/* */}
+    // Return type not needed but if wanted its JSX.Element
 
     // JSX in react components example
      function Car() {
@@ -182,132 +183,143 @@ const myElement = (
           // If statement are not supported inside JSX
           // Need to be used outside JSX unless ternary expression is used
 
-      //  React components
-          // Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML.
-          // Components come in two types, Class components and Function components, in this tutorial we will concentrate on Function components.
-          // In older React code bases, you may find Class components primarily used.
-          // It is now suggested to use Function components along with Hooks, instead of Class components.
-          // Components must start with uppercase letters
-          // To render - createRoot(document.getElementById('root')).render()
-          // Arguments can be passed into components as props
-          
-          // Can have components inside components
-            // Function components
-              // And can render components multiple times inside component
-                function Patty(){
-                  return (
-                    <h2> Meat! </h2>
-                  );
-                }
-                function Burger(){
-                  return (
-                    <>
-                    <h1> Buns</h1>
-                    <Patty/>
-                    </>
-                  )
-                }
-                
-              // More advanced example with props
-              function Car234({make,model}:{make:string, model:string}){
+    //  React components
+        // Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML.
+        // Components come in two types, Class components and Function components, in this tutorial we will concentrate on Function components.
+        // In older React code bases, you may find Class components primarily used.
+        // It is now suggested to use Function components along with Hooks, instead of Class components.
+        // Components must start with uppercase letters
+        // To render - createRoot(document.getElementById('root')).render()
+        // Arguments can be passed into components as props
+        
+        // Can have components inside components
+          // Function components
+            // And can render components multiple times inside component
+              function Patty(){
                 return (
-                  <h2> {make} {model} </h2>
+                  <h2> Meat! </h2>
+                );
+              }
+              function Burger(){
+                return (
+                  <>
+                  <h1> Buns</h1>
+                  <Patty/>
+                  </>
                 )
               }
+              
+            // More advanced example with props
+            function Car234({make,model}:{make:string, model:string}){
+              return (
+                <h2> {make} {model} </h2>
+              )
+            }
 
-              function Garage(){
-                return ( 
-                  <>
-                  <h1> Im a garage with a</h1>
-                  <Car234 make="Ford" model="Mustang"/>
-                  </>
-                );
-              };
+            function Garage(){
+              return ( 
+                <>
+                <h1> Im a garage with a</h1>
+                <Car234 make="Ford" model="Mustang"/>
+                </>
+              );
+            };
 
-            // Class components
-              // Class components are an older way to create React components.
-              // They are based on ES6 classes and must extend React.Component.
-              // Class component names must start with a capital letter.
-              // They must contain a render() method.
-              // The render() method returns JSX (the UI to display).
-              // Components are rendered using JSX tags such as <Car />.
-              // A constructor can be used to initialize state and setup values.
-              // Class component data is typically stored in this.state.
-              // State values are accessed with this.state.propertyName.
-              // State is updated using this.setState(), not by directly changing this.state.
-              // Props are accessed through this.props.
-              // Class components support lifecycle methods such as componentDidMount(), componentDidUpdate(), and componentWillUnmount().
-              // Modern React generally prefers function components with Hooks instead of class components
+          // Class components
+            // Class components are an older way to create React components.
+            // They are based on ES6 classes and must extend React.Component.
+            // Class component names must start with a capital letter.
+            // They must contain a render() method.
+            // The render() method returns JSX (the UI to display).
+            // Components are rendered using JSX tags such as <Car />.
+            // A constructor can be used to initialize state and setup values.
+            // Class component data is typically stored in this.state.
+            // State values are accessed with this.state.propertyName.
+            // State is updated using this.setState(), not by directly changing this.state.
+            // Props are accessed through this.props.
+            // Class components support lifecycle methods such as componentDidMount(), componentDidUpdate(), and componentWillUnmount().
+            // Modern React generally prefers function components with Hooks instead of class components
 
-      // React props
-        // Props are arguments passed into React components.
-        // Props are passed to components via HTML attributes.
-        // string "", number {}, Object {}, Array {} us .prop[#] to select
-
-
-        type House = {
-          bedrooms: number;
-          bathrooms: number 
-        }
-
-        const house:House = {
-          bedrooms:2,
-          bathrooms:1
-        }
+    // React props
+      // Props are arguments passed into React components.
+      // Props are passed to components via HTML attributes.
+      // string "", number {}, Object {}, Array {} us .prop[#] to select
 
 
-        function HouseInfo(house:House){
+      type House = {
+        bedrooms: number;
+        bathrooms: number 
+      }
+
+      const house:House = {
+        bedrooms:2,
+        bathrooms:1
+      }
+
+
+      function HouseInfo(house:House){
+        return (
+          <p> Your house has {house.bedrooms} and {house.bathrooms} bathrooms</p>
+        )
+      }
+
+      // Another way
+      type House1 = {
+        bedrooms: number;
+        bathrooms: number 
+      }
+
+      const house1:House1 = {
+        bedrooms:2,
+        bathrooms:1
+      }
+
+
+      function HouseInfo1({bedrooms, bathrooms}: House1){
+        return (
+          <p> Your house has {bedrooms} and {bathrooms} bathrooms</p>
+        )
+      }
+
+      // Another way
+      type House2 = {
+        bedrooms: number;
+        bathrooms: number 
+      }
+
+      const house2:House2 = {
+        bedrooms:2,
+        bathrooms:1
+      }
+
+
+      function HouseInfo2(house: House2){
+        return (
+          <p> Your house has {house.bedrooms} and {house.bathrooms} bathrooms</p>
+        )
+      }
+
+    // Destructuring props
+      // When you don't know how many properties you will receive, you can use the ...rest operator.
+      // Meaning: you can specify the properties you need, and the rest will be stored in an object.
+        function Car3({color, brand, ...rest}:{color:string, brand: string, model: string, year: number}) {
           return (
-            <p> Your house has {house.bedrooms} and {house.bathrooms} bathrooms</p>
-          )
+            <h2>My {brand} {rest.model} is {color}!</h2>
+          );
         }
-
-        // Another way
-        type House1 = {
-          bedrooms: number;
-          bathrooms: number 
-        }
-
-        const house1:House1 = {
-          bedrooms:2,
-          bathrooms:1
-        }
-
-
-        function HouseInfo1({bedrooms, bathrooms}: House1){
-          return (
-            <p> Your house has {bedrooms} and {bathrooms} bathrooms</p>
-          )
-        }
-
-        // Another way
-        type House2 = {
-          bedrooms: number;
-          bathrooms: number 
-        }
-
-        const house2:House2 = {
-          bedrooms:2,
-          bathrooms:1
-        }
+      // Defualt values - function Car({color = "blue", brand}) {
+        
+    // Props children
+      // In React, you can send the content between the opening and closing tags of a component, to another component.
+      // This can be accessed in the other component using the props.children property.
+       
+    // React events
+        // Just like HTML DOM events, React can perform actions based on user events.
+        // React has the same events as HTML: click, change, mouseover etc.
+        // React events are written in camelCase and handlers are in {} onClick={shoot}  instead of onclick="shoot()"
+    
 
 
-        function HouseInfo2(house: House2){
-          return (
-            <p> Your house has {house.bedrooms} and {house.bathrooms} bathrooms</p>
-          )
-        }
-
-      // Destructuring props
-        // When you don't know how many properties you will receive, you can use the ...rest operator.
-        // Meaning: you can specify the properties you need, and the rest will be stored in an object.
-          function Car3({color, brand, ...rest}:{color:string, brand: string, model: string, year: number}) {
-            return (
-              <h2>My {brand} {rest.model} is {color}!</h2>
-            );
-          }
-
-          
 
 
 
