@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import {name,age} from "./person"
 import message from "./message";
 
@@ -314,10 +315,393 @@ const myElement = (
       // This can be accessed in the other component using the props.children property.
        
     // React events
-        // Just like HTML DOM events, React can perform actions based on user events.
-        // React has the same events as HTML: click, change, mouseover etc.
-        // React events are written in camelCase and handlers are in {} onClick={shoot}  instead of onclick="shoot()"
+      // Just like HTML DOM events, React can perform actions based on user events.
+      // React has the same events as HTML: click, change, mouseover etc.
+      // React events are written in camelCase and handlers are in {} onClick={shoot}  instead of onclick="shoot()"
+        
+      function Football(){
+        const shoot = (a:string)=>{
+          alert(a);
+        }
+
+        return (
+          <button onClick={()=>shoot("You scored")} style={{ backgroundColor: "blue", color: "white",}}> Click to shoot</button>
+        )
+      }
+      
+      // Event object
+        // Event handlers have access to the React event that triggered the function.
+        
+        function Football2(){
+          const shoot = (a:string,b:any)=>{
+            alert(`${a} -> ${b.type}`)
+          }
+          return(
+            <button onClick={(event)=>{shoot("You shot",event)}}> Click</button>
+          )
+        }
+
+    // Conditional rendering
+      // If Statement
+        function MissedGoal() {
+          return <h1>MISSED!</h1>;
+        }
+
+        function MadeGoal() {
+          return <h1>Goal!</h1>;
+        }
+
+        function Goal({isGoal}:{isGoal: boolean}){
+          if (isGoal){
+            return <MadeGoal/>
+          } else{
+            return <MissedGoal/>
+          }
+        }
+
+      // Logical && operator
+        function Car4(props: any) {
+          return (
+            <>
+              {props.brand && <h1>My car is a {props.brand}!</h1>}
+            </>
+          );
+        }
+      
+      // Ternary operator - condition ? true : false , example  { isGoal ? <MadeGoal/> : <MissedGoal/> }
+        
+    // Lists
+      function MyCars(){
+        const cars = ["Ford", "BMW", "Mercedes"]
+
+        return (
+          <>
+          <ul>
+            {cars.map((car)=><li>{car}</li>)}
+          </ul>
+          </>
+        )
+      }
+      
+      // Keys in lists
+        function MyCars1(){
+          const cars = [
+            {id: 1, brand:"Ford"}, {id:2, brand: "BMW"}, {id:3, brand: "Mercedes"}
+          ]
+
+          return (
+            <>
+            <ul>
+              {cars.map((car)=><li key={car.id}>{car.brand}</li>)}
+            </ul>
+            </>
+          )
+        }
+          // Can also use index as key - cars.map((car, index) => <li key={index}>I am a { car }</li>)}
     
+    // Forms
+        function MyForm(){
+          return (
+            <form>
+              <label> 
+                Enter your name:
+                <input type="text"/>
+              </label>
+            </form>
+          )
+        }    
+
+      // HTML forms vs React forms
+        // In React, form elements like <input>, <textarea>, and <select> work a bit differently from traditional HTML.
+        // In standard HTML, form elements maintain their own value based on user input.
+        // For example, an <input type="text"> field keeps track of its own value in the HTML DOM.
+        // In React, the value of the form element is kept in the component's state property and updated only with the setState() function.
+        // In other words; React provides a way to manage form data through component state, leading to what are known as "controlled components."
+
+      // Controlled components
+        // In a controlled component, form data is handled by the React component.
+        // The value of the input element is driven by the React state, and any changes to that value are managed through event handlers that update the state.
+        // When the data is handled by the components, all the data is stored in the component state.
+        // We can use the useState Hook to keep track of each input value and provide a "single source of truth" for the entire application.
+        // .preventDefault() prevents page refresh on form submission
+
+        function MyForm1(){
+          const [name, setName] = useState("");
+
+          function handleChange(e: any){
+            setName(e.target.value)
+          }
+
+          function handleSubmit(e: any){
+            e.preventDefault();
+            alert(name);
+          }
+
+          return (
+            <>
+              <form onSubmit={handleSubmit}>
+                <label> Enter your name: 
+                  <input 
+                    type="text" 
+                    value={name} 
+                    onChange={handleChange}
+                    />
+                </label>
+                <input type="submit"/>
+              </form>
+              <p>{name}</p>
+            </>
+          )
+        }
+
+    // Textarea
+      // Uses value like input, can be used a input
+        /* <textarea
+              value={mytxt}
+              onChange={handleChange}
+        */
+    
+    // Select
+        function MyForm2(){
+          const [myCar, setMyCar] = useState("Volvo")
+
+          const handleChange=(e: any)=>{
+            setMyCar(e.target.value)
+          }
+          
+          return ( 
+            <form>
+              <select value={myCar} onChange={handleChange}>
+                <option value="Ford">Ford</option>
+                <option value="Volvo">Volvo</option>
+                <option value="Fiat">Fiat</option>
+              </select>
+            </form>
+          )
+        }
+
+    // Multiple input fields
+      // When you have multiple controlled input fields in a form, you can manage their state either by:
+        // 1. Using a separate useState call for each input.
+        // 2. Using a single useState call with an object to hold all form field values.
+      // We will use the second approach, as it is more common for forms.
+      // Make sure each input field has a unique name attribute.
+      // Also, when initializing the state, use an object instead of a string. If the input fields have no initial value, use an empty object.
+
+        function MyForm3() {
+          const [inputs, setInputs] = useState({
+            firstname:"",
+            lastname:""
+          });
+
+          const handleChange = (e: any) => {
+            const name = e.target.name;
+            const value = e.target.value;
+            setInputs(values => ({...values, [name]: value}))
+          }
+
+          return (
+            <form>
+              <label>First name:
+              <input 
+                type="text" 
+                name="firstname" 
+                value={inputs.firstname} 
+                onChange={handleChange}
+              />
+              </label>
+              <label>Last name:
+                <input 
+                  type="text" 
+                  name="lastname" 
+                  value={inputs.lastname} 
+                  onChange={handleChange}
+                />
+              </label>
+              <p>Current values: {inputs.firstname} {inputs.lastname}</p>
+            </form>
+          )
+        }
+
+    // Checkbox
+      // For checkboxes, use the checked attribute instead of value to control its state.
+      // We'll use the useState Hook to manage the value of the textarea:
+      // In the handleChange function, use the e.target.type property check if the current input is a checkbox or not.
+
+        function MyForm4() {
+          const [inputs, setInputs] = useState({
+            firstname:" ",
+            tomato: false,
+            onion: false
+          });
+
+          const handleChange = (e: any) => {
+            const target = e.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+            setInputs(values => ({...values, [name]: value}))
+          }
+
+          const handleSubmit = (event: any) => {
+            let fillings = '';
+            if (inputs.tomato) fillings += 'tomato';
+            if (inputs.onion) {
+              if (inputs.tomato) fillings += ' and ';
+              fillings += 'onion';
+            }
+            if (fillings == '') fillings = 'no fillings';
+            alert(`${inputs.firstname} wants a burger with ${fillings}`);
+            event.preventDefault();
+          };
+
+          return (
+            <form onSubmit={handleSubmit}>
+              <label>My name is:
+              <input 
+                type="text" 
+                name="firstname" 
+                value={inputs.firstname} 
+                onChange={handleChange}
+              />
+              </label>
+
+              <p>I want a burger with:</p>
+              <label>Tomato:
+              <input 
+                type="checkbox" 
+                name="tomato" 
+                checked={inputs.tomato} 
+                onChange={handleChange}
+              />
+              </label>
+              <label>Onion:
+                <input 
+                  type="checkbox" 
+                  name="onion" 
+                  checked={inputs.onion} 
+                  onChange={handleChange}
+                />
+              </label>
+              <button type="submit">Submit</button>
+            </form>
+          )
+        }
+
+    // Radio buttons
+      // Radio buttons are typically used in groups where only one option can be selected.
+      // All radio buttons in a group should share the same name attribute.
+      // You control radio buttons based on whether the radio button's value matches the selected value in your state.
+
+      function MyForm5() {
+        const [selectedFruit, setSelectedFruit] = useState('banana');
+
+        const handleChange = (event:any) => {
+          setSelectedFruit(event.target.value);
+        };
+
+        const handleSubmit = (event: any) => {
+          alert(`Your favorite fruit is: ${selectedFruit}`);
+          event.preventDefault();
+        };
+
+        return (
+          <form onSubmit={handleSubmit}>
+            <p>Select your favorite fruit:</p>
+            <label>
+              <input 
+                type="radio" 
+                name="fruit" 
+                value="apple" 
+                checked={selectedFruit === 'apple'} 
+                onChange={handleChange} 
+              /> Apple
+            </label>
+            <br />
+            <label>
+              <input 
+                type="radio" 
+                name="fruit" 
+                value="banana" 
+                checked={selectedFruit === 'banana'} 
+                onChange={handleChange} 
+              /> Banana
+            </label>
+            <br />
+            <label>
+              <input 
+                type="radio" 
+                name="fruit" 
+                value="cherry" 
+                checked={selectedFruit === 'cherry'} 
+                onChange={handleChange} 
+              /> Cherry
+            </label>
+            <br />
+            <button type="submit">Submit</button>
+          </form>
+        );
+      }
+
+    // Portals
+      // React Portals provide a way to render HTML outside the parent component's DOM hierarchy.
+      // This is particularly useful for components like modals, tooltips, and dialogs that need to break out of their container's layout.
+      // A Portal is a React method that is included in the react-dom package.
+      // It is used to render HTML outside the parent component's DOM hierarchy.
+      // Normally the returned HTML element is a child of the parent component, and returned like this:
+
+      function Modal ({isOpen, onClose, children}:{isOpen: boolean, onClose: any, children: any}){
+          if (!isOpen){
+            return null;
+          }
+
+          return createPortal(
+            <div style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <div style={{
+                background: 'white',
+                padding: '20px',
+                borderRadius: '8px'
+              }}>
+                {children}
+                <button onClick={onClose}>Close</button>
+              </div>
+            </div>,
+            document.body
+          );
+      }
+      
+      function MyApp() {
+        const [isOpen, setIsOpen] = useState(false);
+
+        return (
+          <div>
+            <h1>My App</h1>
+            <button onClick={() => setIsOpen(true)}>
+              Open Modal
+            </button>
+
+            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+              <h2>Modal Content</h2>
+              <p>This content is rendered outside the App component!</p>
+            </Modal>
+          </div>
+        );
+      }
+
+
+
+
+
+
 
 
 
@@ -338,6 +722,19 @@ createRoot(document.getElementById("sandy")!).render(
     <HouseInfo1 {...house1}/>
     <HouseInfo2 {...house2}/>
     <Car3 brand="Ford" model="Mustang" color="red" year={1969} />
+    <Football/>
+    <Football2/>
+    <Goal isGoal={true}/>
+    <Car4 brand="Ford"/>
+    <MyCars/>
+    <MyCars1/>
+    <MyForm/>
+    <MyForm1/>
+    <MyForm2/>
+    <MyForm3/>
+    <MyForm4/>
+    <MyForm5/>
+    <MyApp/>
   </>
 );
 
