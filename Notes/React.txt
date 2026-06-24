@@ -20,3 +20,53 @@ React render HTML
 
 ES6
     - Modern JavaScript
+
+Common React event props
+    onClick
+onDoubleClick
+onMouseDown
+onMouseUp
+onMouseEnter
+onMouseLeave
+onMouseMove
+onMouseOver
+onMouseOut
+
+onChange
+onInput
+onSubmit
+onReset
+onFocus
+onBlur
+
+onKeyDown
+onKeyUp
+
+onCopy
+onCut
+onPaste
+
+onDrag
+onDragStart
+onDragEnd
+onDragEnter
+onDragLeave
+onDragOver
+onDrop
+
+onTouchStart
+onTouchMove
+onTouchEnd
+onTouchCancel
+
+onScroll
+onWheel
+
+onLoad
+onError
+
+onAnimationStart
+onAnimationEnd
+onAnimationIteration
+
+onTransitionEnd

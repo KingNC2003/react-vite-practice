@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { useState } from "react";
+import { Children, useState } from "react";
 import { createPortal } from "react-dom";
 import {name,age} from "./person"
 import message from "./message";
@@ -697,7 +697,11 @@ const myElement = (
         );
       }
 
-
+    // Suspense
+      // Suspense is a React feature that lets your components display an alternative HTML while waiting for code or data to load.
+      // The most common use cases are:
+      // Data fetching with suspense-enabled frameworks
+      // Loading components dynamically with React.lazy()
 
 
 
