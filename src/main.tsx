@@ -3,6 +3,9 @@ import { Children, useState } from "react";
 import { createPortal } from "react-dom";
 import {name,age} from "./person"
 import message from "./message";
+import { Suspense } from "react";
+import { BrowserRouter, Link, Routes, Route } from "react-router-dom";
+
 
 const myElement = (
   <table>
@@ -497,7 +500,7 @@ const myElement = (
           const handleChange = (e: any) => {
             const name = e.target.name;
             const value = e.target.value;
-            setInputs(values => ({...values, [name]: value}))
+            setInputs(values => ({...values, [name]: value})) // Use value inside name variable
           }
 
           return (
@@ -703,6 +706,143 @@ const myElement = (
       // Data fetching with suspense-enabled frameworks
       // Loading components dynamically with React.lazy()
 
+      function App() {
+        return (
+          <div>
+            <Suspense fallback={<div>Loading...</div>}>
+            </Suspense>
+          </div>
+        );
+      }
+
+      // lazy() loads a component later.
+      // Suspense shows something while waiting.
+      // fallback is the loading message/UI.
+      // Lazy loading helps the first page load faster.
+      // Normal imports load immediately.
+      // Lazy imports load only when needed.
+      // Lazy components usually need Suspense.
+      // Use lazy loading for big components, pages, routes, charts, modals.
+      // Do not lazy-load tiny components.
+      // Suspense does not load things; it only handles the waiting display.
+      // One Suspense component can wrap multiple lazy components
+      // Simple idea: lazy = load later, Suspense = waiting area, fallback = what users see while waiting.
+      // Lazy example: const Header = lazy(() => import('./Header'));
+
+    // CSS styling
+      // 3 Common ways to style Inline styling, CSS stylesheets, CSS Modules
+      
+      // Inline
+        // Inline example:  <h1 style={{color: "red"}}>Hello Style!</h1> ** Two {{because js and style needs object
+        // camelCase instead of hypen
+        // Can create object and assing to style:{object}
+
+      // CSS stylesheet
+        // You can write your CSS styling in a separate file, just save the file with the .css file extension, and import it in your application.
+
+      // CSS modules
+        // CSS Modules let you write CSS that is scoped locally to a specific component.
+        // The CSS inside a module is available only for the component that imported it, and you do not have to worry about name conflicts.
+        // The CSS file have to have the .module.css extension and can be used by importing it into your React file(s).
+          // Composing clsses
+            // CSS Modules allow you to combine classes using the composes keyword:
+            // Which means that one class can inherit the styles of another class.
+            // For the previous example, both the primary and the secondary classes are depending on the styles of the mybutton class.
+            // This can be done by adding composes: mybutton to the primary and secondary classes:
+          // Global classes
+              // When using CSS Modules, the classes in the .module.css file can only be used in the component that imports them. This is done by prefixing the class name with a hash of the file name and a unique identifier. It is safe to use the same class name in different files, as the names will be unique.
+              // However, sometimes you want your classes to be available globally, and use them in other components.
+              // You can do this with the :global syntax:
+              // You can combine global and local classes in the same CSS Module
+    
+    // CSS in JS
+      // CSS-in-JS is a styling technique where you can write CSS directly in your JavaScript code.
+      // This approach allows you to:
+      // Write CSS using JavaScript
+      // Create component-scoped styles
+      // Use dynamic styles based on props
+      // Avoid CSS class name conflicts
+
+      // Another powerful feature of CSS-in-JS is the ability to use props to make styles dynamic.  background-color: ${props => props.btntype === 'primary' ? '#007bff' : '#6c757d'}; color: white;
+      
+      // Extending styles
+        // Another way of letting multiple elements have the same styles is to extend existing styled components.
+        // For example, we can create a PrimaryButton and SuccessButton that both have the same styles as the Button component, but they also have separate background colors:
+
+      // Component scoped styles
+        // Just like with CSS Modules, styles created in CSS-in-JS are scoped to the component.
+        // They are given unique names and can only be used in the component that imports them.
+
+      // Global styles
+        // You can also create global styles, which will be given normal class name and will be available for all components:
+
+    // React router
+      // React Router is a library that provides routing capabilities for React applications.
+
+      // Routing means handling navigation between different views.
+
+      // React Router is the standard routing library for React applications. It enables you to:
+        // Create multiple pages in your single-page application
+        // Handle URL parameters and query strings
+        // Manage browser history and navigation
+        // Create nested routes and layouts
+        // Implement protected routes for authentication
+        // Without a router, your React application would be limited to a single page with no way to navigate between different views.
+        // INSTALL REACT ROUTER: ******npm install react-router-dom******
+
+      function Home342(){
+        return (
+          <>
+          <h1> Home Page </h1>
+          <MyList/>
+          <UserList/>
+          <Greeting name="Nicholas" age={23}/>
+          <Counter/>
+          <FirstScreen/>
+          <Car390/>
+          <Burger/>
+          <Garage/>
+          <HouseInfo bedrooms={house.bedrooms} bathrooms={house.bathrooms}/>
+          <HouseInfo1 {...house1}/>
+          <HouseInfo2 {...house2}/>
+          <Car3 brand="Ford" model="Mustang" color="red" year={1969} />
+          <Football/>
+          <Football2/>
+          <Goal isGoal={true}/>
+          <Car4 brand="Ford"/>
+          <MyCars/>
+          <MyCars1/>
+          <MyForm/>
+          <MyForm1/>
+          <MyForm2/>
+          <MyForm3/>
+          <MyForm4/>
+          <MyForm5/>
+          <MyApp/>
+          </>
+        )
+      }
+
+      function App1(){
+        return (
+          <BrowserRouter>
+            <nav> 
+              <Link to="/"> Home</Link> |{" "}
+              <Link to="/about">About</Link> |{" "}
+              <Link to="/contact">Contact</Link>
+            </nav>
+
+            <Routes>
+              <Route path = "/" element={<Home342/>}/>
+            </Routes>
+          </BrowserRouter>
+        )
+      }
+
+      // Nested routes
+        // You can have a Route inside another Route, this is called nested routes.
+        // Nested routes allow you change parts of the page when you navigate to a new URL, while other parts is not changed or reloaded, almost like having a page within a page.
+        // Let's use the example above, and add two new components that will be rendered inside the Products component.
 
 
 
@@ -710,35 +850,13 @@ const myElement = (
 
 
 
+
+
+        
 
 createRoot(document.getElementById("sandy")!).render(
   <>
-    {myElement}
-    <MyList/>
-    <UserList/>
-    <Greeting name="Nicholas" age={23}/>
-    <Counter/>
-    <FirstScreen/>
-    <Car390/>
-    <Burger/>
-    <Garage/>
-    <HouseInfo bedrooms={house.bedrooms} bathrooms={house.bathrooms}/>
-    <HouseInfo1 {...house1}/>
-    <HouseInfo2 {...house2}/>
-    <Car3 brand="Ford" model="Mustang" color="red" year={1969} />
-    <Football/>
-    <Football2/>
-    <Goal isGoal={true}/>
-    <Car4 brand="Ford"/>
-    <MyCars/>
-    <MyCars1/>
-    <MyForm/>
-    <MyForm1/>
-    <MyForm2/>
-    <MyForm3/>
-    <MyForm4/>
-    <MyForm5/>
-    <MyApp/>
+    <App1/>
   </>
 );
 
