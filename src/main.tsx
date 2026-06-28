@@ -1,10 +1,10 @@
 import { createRoot } from "react-dom/client";
-import { Children, useState } from "react";
+import { Children, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import {name,age} from "./person"
 import message from "./message";
-import { Suspense } from "react";
-import { BrowserRouter, Link, Routes, Route } from "react-router-dom";
+import { Suspense, useTransition, forwardRef, useRef, createContext, useContext } from "react";
+import { BrowserRouter, Link, Routes, Route, Outlet, NavLink, useParams } from "react-router-dom";
 
 
 const myElement = (
@@ -790,69 +790,451 @@ const myElement = (
         // Without a router, your React application would be limited to a single page with no way to navigate between different views.
         // INSTALL REACT ROUTER: ******npm install react-router-dom******
 
-      function Home342(){
-        return (
-          <>
-          <h1> Home Page </h1>
-          <MyList/>
-          <UserList/>
-          <Greeting name="Nicholas" age={23}/>
-          <Counter/>
-          <FirstScreen/>
-          <Car390/>
-          <Burger/>
-          <Garage/>
-          <HouseInfo bedrooms={house.bedrooms} bathrooms={house.bathrooms}/>
-          <HouseInfo1 {...house1}/>
-          <HouseInfo2 {...house2}/>
-          <Car3 brand="Ford" model="Mustang" color="red" year={1969} />
-          <Football/>
-          <Football2/>
-          <Goal isGoal={true}/>
-          <Car4 brand="Ford"/>
-          <MyCars/>
-          <MyCars1/>
-          <MyForm/>
-          <MyForm1/>
-          <MyForm2/>
-          <MyForm3/>
-          <MyForm4/>
-          <MyForm5/>
-          <MyApp/>
-          </>
-        )
-      }
-
-      function App1(){
-        return (
-          <BrowserRouter>
-            <nav> 
-              <Link to="/"> Home</Link> |{" "}
-              <Link to="/about">About</Link> |{" "}
-              <Link to="/contact">Contact</Link>
-            </nav>
-
-            <Routes>
-              <Route path = "/" element={<Home342/>}/>
-            </Routes>
-          </BrowserRouter>
-        )
-      }
-
-      // Nested routes
+        // Nested routes
         // You can have a Route inside another Route, this is called nested routes.
         // Nested routes allow you change parts of the page when you navigate to a new URL, while other parts is not changed or reloaded, almost like having a page within a page.
         // Let's use the example above, and add two new components that will be rendered inside the Products component.
 
+          function Home342(){
+            return (
+              <>
+              <h1> Home Page </h1>
+              <MyList/>
+              <UserList/>
+              <Greeting name="Nicholas" age={23}/>
+              <Counter/>
+              <FirstScreen/>
+              <Car390/>
+              <Burger/>
+              <Garage/>
+              <HouseInfo bedrooms={house.bedrooms} bathrooms={house.bathrooms}/>
+              <HouseInfo1 {...house1}/>
+              <HouseInfo2 {...house2}/>
+              <Car3 brand="Ford" model="Mustang" color="red" year={1969} />
+              <Football/>
+              <Football2/>
+              <Goal isGoal={true}/>
+              <Car4 brand="Ford"/>
+              <MyCars/>
+              <MyCars1/>
+              <MyForm/>
+              <MyForm1/>
+              <MyForm2/>
+              <MyForm3/>
+              <MyForm4/>
+              <MyForm5/>
+              <MyApp/>
+              <Outlet/>
+              <TransitionTest/>
+              <App2/>
+              <App3/>
+              <Timer/>
+              <App4/>
+              </>
+            )
+          }
 
+          function Disp(){
+            return( <h1> BurgerMan</h1>)
+          }
 
+          function App1(){
+            return (
+              <BrowserRouter>
+                <nav> 
+                  <Link to="/"> Home</Link> |{" "}
+                  <NavLink to="/about" style={navLinkStyles}>About</NavLink> |{" "}
+                  <NavLink to="/contact" style={navLinkStyles}>Contact</NavLink> |{" "}
+                  <NavLink to="/Burger/Nick" style={navLinkStyles}>Burger</NavLink>
+                </nav>
 
+                <Routes>
+                  <Route path = "/" element={<Home342/>}>
+                    <Route path="/about" element={<Disp/>}/>
+                  </Route>
+                  <Route path="/Burger/:firstname" element={<Info/>}/>
+                </Routes>
+              </BrowserRouter>
+            )
+          }
+    
+      // Style active links
+        // There is a special version of the Link component called NavLink that knows whether the link's URL is "active" or not.
+        // The NavLink is especially useful for: Navigation menus, Breadcrumbs, Tabs
+        // A NavLink is considered active if the current URL matches its to prop.
+        // The NavLink component makes it easier to style active links.
+          const navLinkStyles = ({ isActive } : {isActive:boolean}) => ({
+          color: isActive ? '#007bff' : '#333',
+          textDecoration: isActive ? 'none' : 'underline',
+          fontWeight: isActive ? 'bold' : 'normal',
+          padding: '5px 10px'
+          }
+        )
 
+      // URL parameters
+        // URL parameters are variables that you can add to your route paths. They are often used to pass data between components.
+        // In the path http://localhost:5173/customer/Tobias, the URL parameter is Tobias.
+        // URL parameters let you create dynamic routes where part of the URL can change. Think of them as variables in your URL.
+        // React Router provides the useParams hook to access these parameters in your components.
+          function Info() {
+          const { firstname } = useParams();
+          return <h1>Hello, {firstname}!</h1>;
+        }
 
+    // Transitions
+        // The useTransition hook helps you keep your React app responsive during heavy updates.
+        // It lets you mark some state updates as "non-urgent", allowing other, more urgent updates to happen first.
+        // The useTransition hook returns two items:
+          // isPending: tells you if a transition is active
+          // startTransition: function to mark updates as transitions
+        //Use transitions only for non-urgent updates. For example, typing in an input field should be urgent, but filtering a large list can be a transition.
 
+          function SearchResults({ query } : {query: string}) {
+            // Simulate slow search results
+            const items = [];
+            if (query) {
+              for (let i = 0; i < 1000; i++) {
+                items.push(<li key={i}>Result for {query} - {i}</li>);
+              }
+            }
+            return <ul>{items}</ul>;
+          }
 
+          function TransitionTest() {
+            const [input, setInput] = useState('');
+            const [query, setQuery] = useState('');
+            const [isPending, startTransition] = useTransition();
 
+            const handleChange = (e: any) => {
+              // Urgent: Update input field
+              setInput(e.target.value);
+              
+              // Non-urgent: Update search results
+              startTransition(() => {
+                setQuery(e.target.value);
+              });
+            };
+
+            return (
+              <div>
+                <input 
+                  type="text" 
+                  value={input} 
+                  onChange={handleChange} 
+                  placeholder="Type to search..."
+                />
+                {isPending && <p>Loading results...</p>}
+                <SearchResults query={query} />
+              </div>
+            );
+          }
+
+      // Forward ref
+          // forwardRef lets your component pass a reference to one of its children. It's like giving a direct reference to a DOM element inside your component.
+          // Common uses for forwardRef:
+            // Focusing input elements
+            // Triggering animations
+            // Measuring DOM elements
+            // Integrating with third-party libraries
+
+              const MyInput = forwardRef((props:any, ref:any) => (
+                <input ref={ref} {...props} />
+              ));
+
+              function App2() {
+                const inputRef = useRef<HTMLInputElement>(null);
+
+                const focusInput = () => {
+                  inputRef.current?.focus();
+                };
+
+                return (
+                  <div>
+                    <MyInput ref={inputRef} placeholder="Type here..." />
+                    <button onClick={focusInput}>Focus Input</button>
+                  </div>
+                );
+              }
+                          
+      // Higher Order Components (HOC)
+        // A Higher Order Component (HOC) is like a wrapper that adds extra features to your React components. Think of it like putting a case on your phone - the case adds new features (like water protection) without changing the phone itself.
+        // HOCs are functions that take a component and return an enhanced version of that component.
+
+        // A HOC that adds a border to any component
+          function withBorder(WrappedComponent: any) {
+            return function NewComponent(props:any) {
+              return (
+                <div style={{ border: '2px solid blue', padding: '10px' }}>
+                  <WrappedComponent {...props} />
+                </div>
+              );
+            };
+          }
+
+          // Simple component without border
+          function Greeting1({ name }:{name:string}) {
+            return <h1>Hello, {name}!</h1>;
+          }
+
+          // Create a new component with border
+          const GreetingWithBorder = withBorder(Greeting);
+
+          function App3() {
+            return (
+              <div>
+                <Greeting1 name="John" />
+                <GreetingWithBorder name="Jane" />
+              </div>
+            );
+          }
         
+      // Sass
+          // Sass is a CSS pre-processor.
+          // Sass files are executed on the server and sends CSS to the browser.
+          // Sass adds extra features to CSS like variables, nesting, mixins, and more.
+
+      // ******React Hooks - VERY IMPORTANT******
+        // Hooks allow functions to have access to state and other React features without using classes.
+        // They provide a more direct API to React concepts like props, state, context, refs, and lifecycle.
+        // Hooks allow functions to have access to state and other React features without using classes.
+        // They provide a more direct API to React concepts like props, state, context, refs, and lifecycle.
+        // You must import Hooks from react.
+        // State generally refers to application data or properties that need to be tracked.
+        // Hooks can only be called inside React function components.
+        // Hooks can only be called at the top level of a component.
+        // Hooks cannot be conditional
+        // Hooks will not work in React class components.
+        // If you have stateful logic that needs to be reused in several components, you can build your own custom Hooks.
+
+          // useState
+            // The React useState Hook allows us to track state in a function component.
+            // State generally refers to data or properties that need to be tracking in an application.
+            // To use the useState Hook, we first need to import it into our component - import { useState } from "react"; Notice that we are destructuring useState from react as it is a named export.
+            
+            // We initialize our state by calling useState in our function component.
+            // useState accepts an initial state and returns two values: const [color, setColor] = useState("red");
+             // The current state.
+              // A function that updates the state.
+
+            // We can now include our state anywhere in our component
+              // import { useState } from 'react';
+              // import { createRoot } from 'react-dom/client';
+
+              /* function FavoriteColor() {
+                 const [color, setColor] = useState("red");
+                 return <h1>My favorite color is {color}!</h1> 
+                */
+
+                // To update our state, we use our state updater function.
+                  /* <button
+                    type="button"
+                    onClick={() => setColor("blue")}
+                  >Blue</button> 
+                  */
+
+            // The useState Hook can be used to keep track of strings, numbers, booleans, arrays, objects, and any combination of these!
+            // We could create multiple state Hooks to track individual values.
+              // Object example
+                // Since we are now tracking a single object: car, we need to reference that object when rendering the component. (Ex: car.brand)
+                  /* function MyCar() {
+                    const [car, setCar] = useState({
+                      brand: "Ford",
+                      model: "Mustang",
+                      year: "1964",
+                      color: "red"
+                    });
+                  */
+
+            // Objects and arrays in state
+              // When state is updated, the entire state gets overwritten.
+              // What if we only want to update the color of our car?
+              // If we only called setCar({color: "blue"}), this would remove the brand, model, and year from our state.
+              // We can use the JavaScript spread operator to help us.
+              /*
+                const updateColor = () => {
+                setCar(previousState => {
+                  return { ...previousState, color: "blue" }
+                });
+                }
+              */
+              // Because we need the current value of state, we pass a function into our setCar function. This function receives the previous value.
+              // We then return an object, spreading the previousState and overwriting only the color.
+
+          // useEffeect (Run something after render)
+            // The useEffect Hook allows you to perform side effects in your components.
+            // Some examples of side effects are: FETCHING DATA, directly updating the DOM, and timers.
+            // useEffect accepts two arguments. The second argument is optional.
+            // useEffect(<function>, <dependency>)
+              function Timer() {
+                const [count, setCount] = useState(0);
+
+                useEffect(() => {
+                  setTimeout(() => {
+                    setCount((count) => count + 1);
+                  }, 1000);
+                });
+
+                return <h1>I've rendered {count} times!</h1>;
+              }
+            // But wait!! It keeps counting even though it should only count once!
+            // useEffect runs on every render. That means that when the count changes, a render happens, which then triggers another effect.
+            // This is not what we want. There are several ways to control when side effects run
+            // We should always include the second parameter which accepts an array. We can optionally pass dependencies to useEffect in this array.
+              
+              /*
+              1. No dependency passed:
+                useEffect(() => {
+                  //Runs on every render
+                });
+
+              2. An empty array:
+                useEffect(() => {
+                  //Runs only on the first render
+                }, []);
+
+              3. Props or state values:
+                useEffect(() => {
+                  //Runs on the first render
+                  //And any time any dependency value changes
+                }, [prop, state]);
+              */
+
+            // Effect cleanup
+              // Some effects require cleanup to reduce memory leaks.
+              // Timeouts, subscriptions, event listeners, and other effects that are no longer needed should be disposed.
+              // We do this by including a return function at the end of the useEffect Hook.
+                /* useEffect(() => {
+                  let timer = setTimeout(() => {
+                    setCount((count) => count + 1);
+                  }, 1000);
+
+                  return () => clearTimeout(timer)
+                }, []);
+                */
+
+          // useContext
+            // React Context is a way to manage state globally.
+            // It can be used together with the useState Hook to share state between deeply nested components more easily than with useState alone.
+
+              // State should be held by the highest parent component in the stack that requires access to the state.
+              // To illustrate, we have many nested components. The component at the top and bottom of the stack need access to the state.
+              // To do this without Context, we will need to pass the state as "props" through each nested component. This is called "prop drilling".
+                /*
+                  function Component1() {
+                    const [user, setUser] = useState("Linus");
+
+                    return (
+                      <>
+                        <h1>{`Hello ${user}!`}</h1>
+                        <Component2 user={user} />
+                      </>
+                    );
+                  }
+
+                  function Component2({ user }) {
+                    return (
+                      <>
+                        <h1>Component 2</h1>
+                        <Component3 user={user} />
+                      </>
+                    );
+                  }
+
+                  function Component3({ user }) {
+                    return (
+                      <>
+                        <h1>Component 3</h1>
+                        <h2>{`Hello ${user} again!`}</h2>
+                      </>
+                    );
+                  }
+
+                  createRoot(document.getElementById('root')).render(
+                    <Component1 />
+                  );
+                */
+                // Even though component 2 did not need the state, it had to pass the state along so that it could reach component 3.
+                // The solution is to create context.
+                // To create context, you must Import createContext and initialize it:
+                // Wrap child components in the Context Provider and supply the state value.
+                // In order to use the Context in a child component, we need to access it using the useContext Hook.
+
+                  /*
+                    const UserContext = createContext();
+                    function Component1() {
+                      const [user, setUser] = useState("Linus");
+
+                      return (
+                        <UserContext.Provider value={user}>
+                          <h1>{`Hello ${user}!`}</h1>
+                          <Component2 />
+                        </UserContext.Provider>
+                      );
+                    }
+
+                    function Component2() {
+                      return (
+                        <>
+                          <h1>Component 2</h1>
+                          <Component3 />
+                        </>
+                      );
+                    }
+
+                    function Component3() {
+                      const user = useContext(UserContext);
+
+                      return (
+                        <>
+                          <h1>Component 3</h1>
+                          <h2>{`Hello ${user} again!`}</h2>
+                        </>
+                      );
+                    }
+
+                    createRoot(document.getElementById('root')).render(
+                      <Component1 />
+                    );
+                  */
+          
+          // useRef
+            // The useRef Hook allows you to persist values between renders.
+            // It can be used to store a mutable value that does not cause a re-render when updated.
+            // It can be used to access a DOM element directly.
+            // If we tried to count how many times our application renders using the useState Hook, we would be caught in an infinite loop since this Hook itself causes a re-render.
+            // To avoid this, we can use the useRef Hook.
+
+              function App4() {
+              const [inputValue, setInputValue] = useState("");
+              const count = useRef(0);
+
+              useEffect(() => {
+                count.current = count.current + 1;
+              });
+
+              return (
+                <>
+                  <p>Type in the input field:</p>
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                  />
+                  <h1>Render Count: {count.current}</h1>
+                </>
+              );
+            }
+              
+
+
+
+
+
+
+
+
+
+
 
 createRoot(document.getElementById("sandy")!).render(
   <>
