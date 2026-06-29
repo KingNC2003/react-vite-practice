@@ -1,0 +1,171 @@
+- Redux is a pattern and library for managing and updating global application state, where the UI 
+triggers events called "actions" to describe what happened, and separate update logic called "reducers" 
+updates the state in response. It serves as a centralized store for state that needs to be used across your 
+entire application, with rules ensuring that the state can only be updated in a predictable fashion.
+
+- You have large amounts of application state that are needed in many places in the app
+The app state is updated frequently over time
+The logic to update that state may be complex
+The app has a medium or large-sized codebase, and might be worked on by many people
+
+
+
+Redux at its core is a small standalone JS library. It is commonly used with several other packages:
+
+- Redux Toolkit
+Redux Toolkit is our recommended approach for writing Redux logic. It contains packages and functions that we
+think are essential for building a Redux app. Redux Toolkit builds in our suggested best practices, simplifies
+most Redux tasks, prevents common mistakes, and makes it easier to write Redux applications.
+
+- React-Redux
+Redux can integrate with any UI framework, and is most frequently used with React. React-Redux is our official 
+package that lets your React components interact with a Redux store by reading pieces of state and dispatching
+actions to update the store.
+
+- Redux DevTools Extension
+The Redux DevTools Extension shows a history of the changes to the state in your Redux store over time. 
+This allows you to debug your applications effectively, including using powerful techniques like "time-travel 
+debugging".
+
+Immutability
+- "Mutable" means "changeable". If something is "immutable", it can never be changed.
+- JavaScript objects and arrays are all mutable by default. If I create an object, I can change 
+the contents of its fields. If I create an array, I can change the contents as well
+- This is called mutating the object or array. It's the same object or array reference in memory, but
+ now the contents inside the object have changed.
+
+
+
+ Terminology
+    Actions
+        - An action is a plain JavaScript object that has a type field. You can think of an action as an 
+        event that describes something that happened in the application.
+        - The type field should be a string that gives this action a descriptive
+        name, like "todos/todoAdded". We usually write that type string like "domain/eventName", 
+        where the first part is the feature or category that this action belongs to, and the second part
+        is the specific thing that happened.
+        - An action object can have other fields with additional information about what happened. 
+        By convention, we put that information in a field called payload.
+        - A typical action object might look like this:
+
+            const addTodoAction = {
+                type: 'todos/todoAdded',
+                payload: 'Buy milk'
+            }
+
+    Action Creators
+        - Action creator is a function that creates and returns an action object. We typically use these so we
+        don't have to write the action object by hand every time:
+
+            const addTodo = text => {
+                return {
+                    type: 'todos/todoAdded',
+                    payload: text
+                }
+                }
+
+    Reducers
+        - A reducer is a function that receives the current state and an action object, decides how to update 
+        the state if necessary, and returns the new state: (state, action) => newState. You can think of a
+        reducer as an event listener which handles events based on the received action (event) type.
+        - Reducers must always follow some specific rules:
+            - They should only calculate the new state value based on the state and action arguments
+            - They are not allowed to modify the existing state. Instead, they must make immutable updates, by 
+            copying the existing state and making changes to the copied values.
+            - They must be "pure" - they cannot do any asynchronous logic, calculate random values, or cause
+             other "side effects"
+        - The logic inside reducer functions typically follows the same series of steps:
+            - Check to see if the reducer cares about this action
+                - If so, make a copy of the state, update the copy with new values, and return it
+            - Otherwise, return the existing state unchanged
+        Here's a small example of a reducer, showing the steps that each reducer should follow:
+
+            const initialState = { value: 0 }
+
+            function counterReducer(state = initialState, action) {
+            // Check to see if the reducer cares about this action
+            if (action.type === 'counter/increment') {
+                // If so, make a copy of `state`
+                return {
+                ...state,
+                // and update the copy with the new value
+                value: state.value + 1
+                }
+            }
+            // otherwise return the existing state unchanged
+            return state
+            }
+
+    Store
+        - The current Redux application state lives in an object called the store
+        - The store is created by passing in a reducer, and has a method called getState that returns
+        the current state value
+
+            import { configureStore } from '@reduxjs/toolkit'
+            const store = configureStore({ reducer: counterReducer })
+            console.log(store.getState())
+            // {value: 0}
+
+    Dispatch
+        - The Redux store has a method called dispatch. The only way to update the state is to 
+        call store.dispatch() and pass in an action object. The store will run its reducer function
+        and save the new state value inside, and we can call getState() to retrieve the updated value:
+
+            store.dispatch({ type: 'counter/increment' })
+            console.log(store.getState())
+            // {value: 1}
+        
+        - You can think of dispatching actions as "triggering an event" in the application. Something happened, 
+        and we want the store to know about it. Reducers act like event listeners, and when they hear an action 
+        they are interested in, they update the state in response.
+        - We typically call action creators to dispatch the right action:
+
+            const increment = () => {
+            return {
+                type: 'counter/increment'
+            }
+            }
+
+            store.dispatch(increment())
+
+            console.log(store.getState())
+            // {value: 2}
+    
+    Selectors
+        - Selectors are functions that know how to extract specific pieces of information from a store state
+         value. As an application grows bigger, this can help avoid repeating logic as different parts of the 
+         app need to read the same data:
+
+            const selectCounterValue = state => state.value
+            const currentValue = selectCounterValue(store.getState())
+            console.log(currentValue)
+            // 2
+
+Redux Application Data Flow
+
+
+- State describes the condition of the app at a specific point in time
+- The UI is rendered based on that state
+- When something happens (such as a user clicking a button), the state is updated based on what occurred
+- The UI re-renders based on the new state
+For Redux specifically, we can break these steps into more detail:
+
+ Initial setup:
+    - A Redux store is created using a root reducer function
+    - The store calls the root reducer once, and saves the return value as its initial state
+    - When the UI is first rendered, UI components access the current state of the Redux store, and use that data to decide what to render. They also subscribe to any future store updates so they can know if the state has changed.
+ Updates:
+    - Something happens in the app, such as a user clicking a button
+    - The app code dispatches an action to the Redux store, like dispatch({type: 'counter/increment'})
+    - The store runs the reducer function again with the previous state and the current action, and saves the return value as the new state
+    - The store notifies all parts of the UI that are subscribed that the store has been updated
+    - Each UI component that needs data from the store checks to see if the parts of the state they need have changed.
+    - Each component that sees its data has changed forces a re-render with the new data, so it can update what's shown on the screen
+ Here's what that data flow looks like visually:
+
+
+
+
+------ Counter Example App ------
+
+
