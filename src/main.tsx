@@ -1,10 +1,11 @@
 import { createRoot } from "react-dom/client";
-import { Children, useState, useEffect } from "react";
+import { Children, useState, useEffect, useReducer, useMemo} from "react";
 import { createPortal } from "react-dom";
 import {name,age} from "./person"
 import message from "./message";
-import { Suspense, useTransition, forwardRef, useRef, createContext, useContext } from "react";
+import { Suspense, useTransition, forwardRef, useRef, createContext, useContext, useCallback } from "react";
 import { BrowserRouter, Link, Routes, Route, Outlet, NavLink, useParams } from "react-router-dom";
+import React from "react";
 
 
 const myElement = (
@@ -830,6 +831,12 @@ const myElement = (
               <App3/>
               <Timer/>
               <App4/>
+              <App5/>
+              <App6/>
+              <Score/>
+              <App7/>
+              <WithCallbackExample/>
+              <Home/>
               </>
             )
           }
@@ -1224,14 +1231,254 @@ const myElement = (
                 </>
               );
             }
-              
+            
+            // useRef() only returns one item. It returns an Object called current.
+            // When we initialize useRef we set the initial value: useRef(0).
 
+            // Accessing DOM elements
+              // The useRef Hook is often used to access DOM elements directly.
+              // First, we create a ref using the useRef Hook: const inputElement = useRef();.
+              // Then, we attach the ref to a DOM element using the ref attribute in JSX: <input type="text" ref={inputElement} />.
+              // Finally, we can access the DOM element using the current property: inputElement.current.
+              // Ref: // NOT LIKE NORMAL ATTRIBUTE - Sets
+                function App5() {
+                  const inputElement: any = useRef(null);
 
+                  const focusInput = () => {
+                    inputElement.current.focus();
+                  };
 
+                  return (
+                    <>
+                      <input type="text" ref={inputElement} /> 
+                      <button onClick={focusInput}>Focus Input</button>
+                    </>
+                  );
+                }
+                
+            // Tracking state changes
+              // The useRef Hook can also be used to keep track of previous state values
+              // This is because we are able to persist useRef values between renders.
+                function App6() {
+                  const [inputValue, setInputValue] = useState("");
+                  const previousInputValue = useRef("");
 
+                  useEffect(() => {
+                    previousInputValue.current = inputValue;
+                  }, [inputValue]);
 
+                  return (
+                    <>
+                    <br></br>
+                      <input
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                      />
+                      <h2>Current Value: {inputValue}</h2>
+                      <h2>Previous Value: {previousInputValue.current}</h2>
+                    </>
+                  );
+                }
 
+              // This time we use a combination of useState, useEffect, and useRef to keep track of the previous state.
+              // In the useEffect, we are updating the useRef current value each time the inputValue is updated by entering text into the input field.
 
+          // useReducer
+            // The useReducer Hook is similar to the useState Hook.
+            // It allows for custom state logic.
+            // If you find yourself keeping track of multiple pieces of state that rely on complex logic, useReducer may be useful
+            // useReducer(reducer, initialState, init)
+            // The reducer function contains your custom state logic and the initialStatecan be a simple value, but generally will contain an object. The init argument is optional and is used to initialize the state.
+            // The useReducer Hook returns the current state and a dispatch method.
+                
+                const initialScore = [
+                  {
+                    id: 1,
+                    score: 0,
+                    name: "John",
+                  },
+                  {
+                    id: 2,
+                    score: 0,
+                    name: "Sally",
+                  },
+                ];
+
+                const reducer = (state:any, action:any) => {
+                  switch (action.type) {
+                    case "INCREASE":
+                      return state.map((player:any) => {
+                        if (player.id === action.id) {
+                          return { ...player, score: player.score + 1 };
+                        } else {
+                          return player;
+                        }
+                      });
+                    default:
+                      return state;
+                  }
+                };
+
+                function Score() {
+                  const [score, dispatch] = useReducer(reducer, initialScore);
+
+                  const handleIncrease = (player:any) => {
+                    dispatch({ type: "INCREASE", id: player.id });
+                  };
+
+                  return (
+                    <>
+                      {score.map((player:any) => (
+                        <div key={player.id}>
+                          <label>
+                            <input
+                              type="button"
+                              onClick={() => handleIncrease(player)}
+                              value={player.name}
+                            />
+                            {player.score}
+                          </label>
+                        </div>
+                      ))}
+                    </>
+                  );
+                }
+
+          // useCallback
+            // The useCallback Hook is used to memoize a callback function.
+            // Memoizing a function means caching the result of a function so that it does not need to be recalculated.
+            // The useCallback function only re-executes when one of its dependencies changes value.
+            // This allows us to isolate resource intensive functions so that they will not automatically run on every render.
+            // The useCallback and useMemo Hooks are similar:
+              // useMemo returns a memoized value.
+              // useCallback returns a memorized function.
+            // The useCallback Hook accepts two arguments.
+              // useCallback(callback, dependencies)
+                // callback: The function that you want to memoize.
+                // dependencies: An array of dependencies for the callback function. The memoized callback will only change if one of these dependencies has changed.
+
+              // Child component that receives a function prop
+              const Button = React.memo(({ onClick, text }:{onClick: any, text: any}) => {
+                console.log(`${text} button rendered`);
+                return <button onClick={onClick}>{text}</button>;
+              });
+
+              // Parent component with useCallback
+              function WithCallbackExample() {
+                const [count1, setCount1] = useState(0);
+                const [count2, setCount2] = useState(0);
+
+                // These functions are memoized and only recreated when dependencies change
+                const handleClick1 = useCallback(() => {
+                  setCount1(count1 + 1);
+                }, [count1]);
+
+                const handleClick2 = useCallback(() => {
+                  setCount2(count2 + 1);
+                }, [count2]);
+
+                console.log("Parent rendered");
+                return (
+                  <div>
+                    <h2>With useCallback:</h2>
+                    <p>Count 1: {count1}</p>
+                    <p>Count 2: {count2}</p>
+                    <Button onClick={handleClick1} text="Button 1" />
+                    <Button onClick={handleClick2} text="Button 2" />
+                  </div>
+                );
+              }
+
+          // useMemo
+            // The React useMemo Hook returns a memorized value.
+            // The useMemo Hook only runs when one of its dependencies update. This can improve performance.
+            // The useMemo and useCallback Hooks are similar:
+              // useMemo returns a memoized value.
+              // useCallback returns a memoized function.
+            // The useMemo Hook can be used to keep expensive, resource intensive functions from needlessly running.
+            // In this example, we have an expensive function that runs on every render.
+            // When changing the count or adding a todo, you will notice a delay in execution.
+
+            // To fix this performance issue, we can use the useMemo Hook to memoize the expensiveCalculation function. This will cause the function to only run when needed.
+            // We can wrap the expensive function call with useMemo.
+            // The useMemoHook accepts a second parameter to declare dependencies. The expensive function will only run when its dependencies have changed.
+            // In the following example, the expensive function will only run when count is changed and not when todo's are added.
+
+              const App7 = () => {
+              const [count, setCount] = useState(0);
+              const [todos, setTodos] = useState<string[]>([]);
+              const calculation = useMemo(() => expensiveCalculation(count), [count]);
+
+              const increment = () => {
+                setCount((c) => c + 1);
+              };
+              const addTodo = () => {
+                setTodos((t) => [...t, "New Todo"]);
+              };
+
+              return (
+                <div>
+                  <div>
+                    <h2>My Todos</h2>
+                    {todos.map((todo, index) => {
+                      return <p key={index}>{todo}</p>;
+                    })}
+                    <button onClick={addTodo}>Add Todo</button>
+                  </div>
+                  <hr />
+                  <div>
+                    Count: {count}
+                    <button onClick={increment}>+</button>
+                    <h2>Expensive Calculation</h2>
+                    {calculation}
+                  </div>
+                </div>
+              );
+            };
+
+            const expensiveCalculation = (num: any) => {
+              console.log("Calculating...");
+              for (let i = 0; i < 1000000000; i++) {
+                num += 1;
+              }
+              return num;
+            };
+
+          // Custom hooks
+            // You can make your own Hooks!
+            // When you have components that can be used by multiple components, we can extract that component into a custom Hook.
+            // Custom Hooks start with "use". Example: useFetch.
+              // Build a hook
+                // First, let us make an example without a custom Hook.
+                // In the following code, we are fetching data from a URL and displaying it.
+                // We will use the JSONPlaceholder service to fetch some fake data.
+
+                  type Todo = {
+                    userId: number;
+                    id: number;
+                    title: string;
+                    completed: boolean;
+};  
+
+                  const Home = () => {
+                  const [data, setData] = useState<Todo[]>([]);
+
+                  useEffect(() => {
+                    fetch("https://jsonplaceholder.typicode.com/todos")
+                      .then((res) => res.json())
+                      .then((data) => setData(data));
+                }, []);
+
+                  return (
+                    <>
+                      {data &&
+                        data.map((item:any) => {
+                          return <p key={item.id}>{item.title}</p>;
+                        })}
+                    </>
+                  );
+                };
 
 
 
