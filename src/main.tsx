@@ -1067,7 +1067,7 @@ const myElement = (
               // Because we need the current value of state, we pass a function into our setCar function. This function receives the previous value.
               // We then return an object, spreading the previousState and overwriting only the color.
 
-          // useEffeect (Run something after render)
+          // useEffect (Run something after render)
             // The useEffect Hook allows you to perform side effects in your components.
             // Some examples of side effects are: FETCHING DATA, directly updating the DOM, and timers.
             // useEffect accepts two arguments. The second argument is optional.
